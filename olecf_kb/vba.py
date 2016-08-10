@@ -84,7 +84,6 @@ class OStream(object):
 
     stream_offset = 0
     while stream_offset < olecf_item.size:
-      print("X: %x" % stream_offset)
       entry_part1_struct = self._ENTRY_PART1.parse(stream_data[stream_offset:])
 
       entry_part_size = (7 * 4) + len(entry_part1_struct.data)
@@ -108,6 +107,35 @@ class OStream(object):
         print(hexdump.Hexdump(stream_data[stream_offset:next_stream_offset]))
 
       # TODO: add debug info.
+      if self._debug:
+        print(u'Unknown1\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+            entry_part1_struct.unknown1))
+        print(u'Unknown2\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+            entry_part1_struct.unknown2))
+        print(u'Unknown3\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+            entry_part1_struct.unknown3))
+        print(u'Unknown4\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+            entry_part1_struct.unknown4))
+        print(u'Unknown5\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+            entry_part1_struct.unknown5))
+        print(u'Unknown6\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+            entry_part1_struct.unknown6))
+        print(u'Data\t\t\t\t\t\t\t\t: {0:s}'.format(entry_part1_struct.data))
+        # TODO: alignment padding.
+        print(u'Unknown7\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+            entry_part2_struct.unknown7))
+        print(u'Unknown8\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+            entry_part2_struct.unknown8))
+        print(u'Unknown9\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+            entry_part2_struct.unknown9))
+        print(u'Unknown10\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+            entry_part2_struct.unknown10))
+        print(u'Unknown11\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+            entry_part2_struct.unknown11))
+        print(u'Font name\t\t\t\t\t\t\t: {0:s}'.format(
+            entry_part2_struct.font_name))
+        # TODO: alignment padding.
+        print(u'')
 
       stream_offset = next_stream_offset
 
