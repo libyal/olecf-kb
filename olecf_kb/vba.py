@@ -39,8 +39,8 @@ class FStream(object):
       construct.ULInt32(u'unknown1'),
       construct.ULInt32(u'unknown2'),
       construct.ULInt32(u'unknown3'),
-      construct.ULInt32(u'unknown4'),
-      construct.ULInt16(u'unknown5'),
+      construct.ULInt32(u'o_stream_entry_index'),
+      construct.ULInt16(u'o_stream_entry_size'),
       construct.ULInt16(u'unknown6'),
       construct.Bytes(u'variable_name', lambda ctx: ctx.size - 28))
 
@@ -128,12 +128,12 @@ class FStream(object):
             entry_struct.unknown1))
         print(u'Unknown2\t\t\t\t\t\t\t: 0x{0:08x}'.format(
             entry_struct.unknown2))
-        print(u'Unknown3\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+        print(u'Unknown3\t\t\t\t\t\t\t: {0:d}'.format(
             entry_struct.unknown3))
-        print(u'Unknown4\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-            entry_struct.unknown4))
-        print(u'Unknown5\t\t\t\t\t\t\t: {0:d}'.format(
-            entry_struct.unknown5))
+        print(u'O stream entry size\t\t\t\t\t\t: {0:0d}'.format(
+            entry_struct.o_stream_entry_size))
+        print(u'O stream entry index\t\t\t\t\t\t: {0:d}'.format(
+            entry_struct.o_stream_entry_index))
         print(u'Unknown6\t\t\t\t\t\t\t: 0x{0:04x}'.format(
             entry_struct.unknown6))
 
