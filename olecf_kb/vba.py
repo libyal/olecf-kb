@@ -27,20 +27,24 @@ class FStream(object):
       construct.ULInt32(u'unknown10'),
       construct.ULInt32(u'unknown11'),
       construct.Bytes(u'unknown12', 16),
-      construct.Bytes(u'unknown13', 42),
-      construct.Byte(u'sentinal'))
+      construct.Bytes(u'unknown13', 23))
 
   _ENTRY = construct.Struct(
       u'entry',
+      construct.ULInt32(u'unknown7'),
+      construct.ULInt32(u'unknown8'),
+      construct.ULInt16(u'unknown9'),
+      # Does not include the 2 bytes of the size value.
+      construct.ULInt16(u'size'),
       construct.ULInt32(u'unknown1'),
       construct.ULInt32(u'unknown2'),
       construct.ULInt32(u'unknown3'),
-      construct.CString(u'variable_name'),
       construct.ULInt32(u'unknown4'),
-      construct.ULInt32(u'unknown5'),
-      construct.ULInt32(u'unknown6'),
-      construct.ULInt32(u'unknown7'),
-      construct.ULInt32(u'unknown8'))
+      construct.ULInt16(u'unknown5'),
+      construct.ULInt16(u'unknown6'),
+      construct.Bytes(u'variable_name', lambda ctx: ctx.size - 28))
+
+  # TODO: - 28 does not hold for the last entry but size does.
 
   def __init__(self, debug=False):
     """Initializes a stream.
@@ -104,31 +108,41 @@ class FStream(object):
     while stream_offset < olecf_item.size:
       entry_struct = self._ENTRY.parse(stream_data[stream_offset:])
 
-      next_stream_offset = stream_offset + (8 * 4) + len(entry_struct.variable_name) + 1
+      next_stream_offset = stream_offset + 2 + entry_struct.size + 2
 
       if self._debug:
         print(u'f stream entry data:')
         print(hexdump.Hexdump(stream_data[stream_offset:next_stream_offset]))
 
       if self._debug:
+        print(u'Unknown7\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+            entry_struct.unknown7))
+        print(u'Unknown8\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+            entry_struct.unknown8))
+        print(u'Unknown9\t\t\t\t\t\t\t: 0x{0:04x}'.format(
+            entry_struct.unknown9))
+
+        print(u'Size\t\t\t\t\t\t\t\t: {0:d}'.format(entry_struct.size))
+
         print(u'Unknown1\t\t\t\t\t\t\t: 0x{0:08x}'.format(
             entry_struct.unknown1))
         print(u'Unknown2\t\t\t\t\t\t\t: 0x{0:08x}'.format(
             entry_struct.unknown2))
         print(u'Unknown3\t\t\t\t\t\t\t: 0x{0:08x}'.format(
             entry_struct.unknown3))
-        print(u'Variable name\t\t\t\t\t\t\t: {0:s}'.format(
-            entry_struct.variable_name))
         print(u'Unknown4\t\t\t\t\t\t\t: 0x{0:08x}'.format(
             entry_struct.unknown4))
-        print(u'Unknown5\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+        print(u'Unknown5\t\t\t\t\t\t\t: {0:d}'.format(
             entry_struct.unknown5))
-        print(u'Unknown6\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+        print(u'Unknown6\t\t\t\t\t\t\t: 0x{0:04x}'.format(
             entry_struct.unknown6))
-        print(u'Unknown7\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-            entry_struct.unknown7))
-        print(u'Unknown8\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-            entry_struct.unknown8))
+
+        # TODO: fix this.
+        try:
+          variable_name = entry_struct.variable_name.decode(u'cp1252')
+          print(u'Variable name\t\t\t\t\t\t\t: {0:s}'.format(variable_name))
+        except UnicodeEncodeError:
+          pass
 
         print(u'')
 
