@@ -9,6 +9,113 @@ import pyolecf
 from olecf_kb import hexdump
 
 
+class FStream(object):
+  """Class that defines a f stream."""
+
+  def __init__(self, debug=False):
+    """Initializes a stream.
+
+    Args:
+      debug (Optional[bool]): True if debug information should be printed.
+    """
+    super(FStream, self).__init__()
+    self._debug = debug
+
+  def Read(self, olecf_item):
+    """Reads the stream from the OLECF item.
+
+    Args:
+      olecf_item (pyolecf.item): OLECF item.
+
+    Returns:
+      bool: True if the stream was successfully read.
+    """
+    # TODO: add support for read with optional size argument.
+    stream_data = olecf_item.read(olecf_item.size)
+
+    if self._debug:
+      print(u'f stream data:')
+      print(hexdump.Hexdump(stream_data))
+
+
+class OStream(object):
+  """Class that defines an o stream."""
+
+  _ENTRY_PART1 = construct.Struct(
+      u'entry_part1',
+      construct.ULInt32(u'unknown1'),
+      construct.ULInt32(u'unknown2'),
+      construct.ULInt32(u'unknown3'),
+      construct.ULInt32(u'unknown4'),
+      construct.ULInt32(u'unknown5'),
+      construct.ULInt32(u'unknown6'),
+      construct.ULInt32(u'unknown7'),
+      construct.CString(u'data'))
+
+  _ENTRY_PART2 = construct.Struct(
+      u'entry_part2',
+      construct.ULInt32(u'unknown7'),
+      construct.ULInt32(u'unknown8'),
+      construct.ULInt32(u'unknown9'),
+      construct.ULInt32(u'unknown10'),
+      construct.ULInt32(u'unknown11'),
+      construct.CString(u'font_name'),
+      construct.macros.Aligned(
+          construct.Byte(u'padding2'),
+          modulus=4))
+
+  def __init__(self, debug=False):
+    """Initializes a stream.
+
+    Args:
+      debug (Optional[bool]): True if debug information should be printed.
+    """
+    super(OStream, self).__init__()
+    self._debug = debug
+
+  def Read(self, olecf_item):
+    """Reads the stream from the OLECF item.
+
+    Args:
+      olecf_item (pyolecf.item): OLECF item.
+
+    Returns:
+      bool: True if the stream was successfully read.
+    """
+    # TODO: add support for read with optional size argument.
+    stream_data = olecf_item.read(olecf_item.size)
+
+    stream_offset = 0
+    while stream_offset < olecf_item.size:
+      print("X: %x" % stream_offset)
+      entry_part1_struct = self._ENTRY_PART1.parse(stream_data[stream_offset:])
+
+      entry_part_size = (7 * 4) + len(entry_part1_struct.data)
+      padding_size = entry_part_size % 4
+      if padding_size != 0:
+        padding_size = 4 - padding_size
+
+      next_stream_offset = stream_offset + entry_part_size + padding_size
+
+      entry_part2_struct = self._ENTRY_PART2.parse(stream_data[next_stream_offset:])
+
+      entry_part_size = (5 * 4) + len(entry_part2_struct.font_name)
+      padding_size = entry_part_size % 4
+      if padding_size != 0:
+        padding_size = 4 - padding_size
+
+      next_stream_offset += entry_part_size + padding_size
+
+      if self._debug:
+        print(u'o stream entry data:')
+        print(hexdump.Hexdump(stream_data[stream_offset:next_stream_offset]))
+
+      print(entry_part1_struct)
+      print(entry_part2_struct)
+
+      stream_offset = next_stream_offset
+
+
 class VBAProjectStream(object):
   """Class that defines a _VBA_PROJECT (Preformance Cache) stream."""
 
@@ -153,6 +260,33 @@ class VBACollector(object):
       if not olecf_macros_item:
         return
 
+      olecf_macros_project_item = olecf_macros_item.get_sub_item_by_name(u'PROJECT')
+      if not olecf_macros_project_item:
+        return
+
+      stream_data = olecf_macros_project_item.read(olecf_macros_project_item.size)
+      if self._debug:
+        # ID="{%GUID%}"
+        # Document=ThisDocument/&H00000000
+        # Package={%GUID%}
+        # BaseClass=%IDENTIFIER%
+        # HelpFile=""
+        # Name="Project"
+        # HelpContextID="0"
+        # VersionCompatible32="393222000"
+        # CMG="%IDENTIFIER%"
+        # DPB="%IDENTIFIER%"
+        # GC="%IDENTIFIER%"
+
+        print(u'PROJECT stream data:')
+        print(stream_data)
+
+      base_clase = None
+      for line in stream_data.split(b'\n'):
+        line = line.strip()
+        if line.startswith(b'BaseClass='):
+          _, _, base_clase = line.rpartition(b'=')
+
       olecf_vba_item = olecf_macros_item.get_sub_item_by_name(u'VBA')
       if not olecf_vba_item:
         return
@@ -161,6 +295,21 @@ class VBACollector(object):
           u'_VBA_PROJECT')
       if not olecf_vba_project_item:
         return
+
+      if base_clase:
+        # olecf_file.get_item_by_path('\\Root Entry\\Macros\\{0:s}\\f'.format(base_class))
+
+        olecf_base_class_item = olecf_macros_item.get_sub_item_by_name(base_clase)
+        if olecf_base_class_item:
+          olecf_f_item = olecf_base_class_item.get_sub_item_by_name(u'f')
+          if olecf_f_item:
+            f_stream = FStream(debug=self._debug)
+            f_stream.Read(olecf_f_item)
+
+          olecf_o_item = olecf_base_class_item.get_sub_item_by_name(u'o')
+          if olecf_o_item:
+            o_stream = OStream(debug=self._debug)
+            o_stream.Read(olecf_o_item)
 
       self.stream_found = True
 
