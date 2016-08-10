@@ -39,8 +39,8 @@ class FStream(object):
       construct.ULInt32(u'unknown1'),
       construct.ULInt32(u'unknown2'),
       construct.ULInt32(u'unknown3'),
-      construct.ULInt32(u'o_stream_entry_index'),
-      construct.ULInt16(u'o_stream_entry_size'),
+      construct.ULInt32(u'o_stream_entry_size'),
+      construct.ULInt16(u'o_stream_entry_index'),
       construct.ULInt16(u'unknown6'),
       construct.Bytes(u'variable_name', lambda ctx: ctx.size - 28))
 
