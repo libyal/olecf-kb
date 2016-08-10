@@ -59,10 +59,7 @@ class OStream(object):
       construct.ULInt32(u'unknown9'),
       construct.ULInt32(u'unknown10'),
       construct.ULInt32(u'unknown11'),
-      construct.CString(u'font_name'),
-      construct.macros.Aligned(
-          construct.Byte(u'padding2'),
-          modulus=4))
+      construct.CString(u'font_name'))
 
   def __init__(self, debug=False):
     """Initializes a stream.
@@ -110,8 +107,7 @@ class OStream(object):
         print(u'o stream entry data:')
         print(hexdump.Hexdump(stream_data[stream_offset:next_stream_offset]))
 
-      print(entry_part1_struct)
-      print(entry_part2_struct)
+      # TODO: add debug info.
 
       stream_offset = next_stream_offset
 
