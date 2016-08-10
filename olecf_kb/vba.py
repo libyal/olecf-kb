@@ -161,8 +161,7 @@ class OStream(object):
       construct.ULInt32(u'unknown2'),
       construct.ULInt32(u'unknown3'),
       construct.ULInt32(u'unknown4'),
-      construct.ULInt16(u'data_size'),
-      construct.ULInt16(u'unknown5'),
+      construct.ULInt32(u'data_size'),
       construct.ULInt32(u'unknown6'),
       construct.ULInt32(u'unknown7'),
       construct.CString(u'data'))
@@ -237,10 +236,9 @@ class OStream(object):
             entry_part1_struct.unknown3))
         print(u'Unknown4\t\t\t\t\t\t\t: 0x{0:08x}'.format(
             entry_part1_struct.unknown4))
-        print(u'Data size\t\t\t\t\t\t\t: {0:d}'.format(
+        print(u'Data size\t\t\t\t\t\t\t: {0:d} (0x{1:08x})'.format(
+            entry_part1_struct.data_size & 0x7fffffff,
             entry_part1_struct.data_size))
-        print(u'Unknown5\t\t\t\t\t\t\t: 0x{0:04x}'.format(
-            entry_part1_struct.unknown5))
         print(u'Unknown6\t\t\t\t\t\t\t: 0x{0:08x}'.format(
             entry_part1_struct.unknown6))
         print(u'Data\t\t\t\t\t\t\t\t: {0:s}'.format(entry_part1_struct.data))
