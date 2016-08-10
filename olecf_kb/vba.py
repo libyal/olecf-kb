@@ -106,7 +106,10 @@ class FStream(object):
       print(u'')
 
     while stream_offset < olecf_item.size:
-      entry_struct = self._ENTRY.parse(stream_data[stream_offset:])
+      try:
+        entry_struct = self._ENTRY.parse(stream_data[stream_offset:])
+      except construct.core.FieldError:
+        break
 
       next_stream_offset = stream_offset + 2 + entry_struct.size + 2
 
@@ -158,7 +161,8 @@ class OStream(object):
       construct.ULInt32(u'unknown2'),
       construct.ULInt32(u'unknown3'),
       construct.ULInt32(u'unknown4'),
-      construct.ULInt32(u'unknown5'),
+      construct.ULInt16(u'data_size'),
+      construct.ULInt16(u'unknown5'),
       construct.ULInt32(u'unknown6'),
       construct.ULInt32(u'unknown7'),
       construct.CString(u'data'))
@@ -195,7 +199,10 @@ class OStream(object):
 
     stream_offset = 0
     while stream_offset < olecf_item.size:
-      entry_part1_struct = self._ENTRY_PART1.parse(stream_data[stream_offset:])
+      try:
+        entry_part1_struct = self._ENTRY_PART1.parse(stream_data[stream_offset:])
+      except construct.core.FieldError:
+        break
 
       entry_part_size = (7 * 4) + len(entry_part1_struct.data) + 1
       padding_size = entry_part_size % 4
@@ -204,7 +211,10 @@ class OStream(object):
 
       next_stream_offset = stream_offset + entry_part_size + padding_size
 
-      entry_part2_struct = self._ENTRY_PART2.parse(stream_data[next_stream_offset:])
+      try:
+        entry_part2_struct = self._ENTRY_PART2.parse(stream_data[next_stream_offset:])
+      except construct.core.FieldError:
+        break
 
       entry_part_size = (5 * 4) + len(entry_part2_struct.font_name) + 1
       padding_size = entry_part_size % 4
@@ -227,7 +237,9 @@ class OStream(object):
             entry_part1_struct.unknown3))
         print(u'Unknown4\t\t\t\t\t\t\t: 0x{0:08x}'.format(
             entry_part1_struct.unknown4))
-        print(u'Unknown5\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+        print(u'Data size\t\t\t\t\t\t\t: {0:d}'.format(
+            entry_part1_struct.data_size))
+        print(u'Unknown5\t\t\t\t\t\t\t: 0x{0:04x}'.format(
             entry_part1_struct.unknown5))
         print(u'Unknown6\t\t\t\t\t\t\t: 0x{0:08x}'.format(
             entry_part1_struct.unknown6))
