@@ -2,6 +2,7 @@
 """Visual Basic for Applications (VBA) collector."""
 
 from __future__ import print_function
+import uuid
 
 import construct
 import pyolecf
@@ -11,6 +12,35 @@ from olecf_kb import hexdump
 
 class FStream(object):
   """Class that defines a f stream."""
+
+  _HEADER = construct.Struct(
+      u'header',
+      construct.ULInt32(u'unknown1'),
+      construct.ULInt32(u'unknown2'),
+      construct.ULInt32(u'unknown3'),
+      construct.ULInt32(u'unknown4'),
+      construct.ULInt32(u'unknown5'),
+      construct.ULInt32(u'unknown6'),
+      construct.ULInt32(u'unknown7'),
+      construct.ULInt32(u'unknown8'),
+      construct.ULInt32(u'unknown9'),
+      construct.ULInt32(u'unknown10'),
+      construct.ULInt32(u'unknown11'),
+      construct.Bytes(u'unknown12', 16),
+      construct.Bytes(u'unknown13', 42),
+      construct.Byte(u'sentinal'))
+
+  _ENTRY = construct.Struct(
+      u'entry',
+      construct.ULInt32(u'unknown1'),
+      construct.ULInt32(u'unknown2'),
+      construct.ULInt32(u'unknown3'),
+      construct.CString(u'variable_name'),
+      construct.ULInt32(u'unknown4'),
+      construct.ULInt32(u'unknown5'),
+      construct.ULInt32(u'unknown6'),
+      construct.ULInt32(u'unknown7'),
+      construct.ULInt32(u'unknown8'))
 
   def __init__(self, debug=False):
     """Initializes a stream.
@@ -33,9 +63,76 @@ class FStream(object):
     # TODO: add support for read with optional size argument.
     stream_data = olecf_item.read(olecf_item.size)
 
+    header_struct = self._HEADER.parse(stream_data)
+
+    stream_offset = self._HEADER.sizeof()
+
     if self._debug:
-      print(u'f stream data:')
-      print(hexdump.Hexdump(stream_data))
+      print(u'f stream header data:')
+      print(hexdump.Hexdump(stream_data[:stream_offset]))
+
+    if self._debug:
+      print(u'Unknown1\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+          header_struct.unknown1))
+      print(u'Unknown2\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+          header_struct.unknown2))
+      print(u'Unknown3\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+          header_struct.unknown3))
+      print(u'Unknown4\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+          header_struct.unknown4))
+      print(u'Unknown5\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+          header_struct.unknown5))
+      print(u'Unknown6\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+          header_struct.unknown6))
+      print(u'Unknown7\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+          header_struct.unknown7))
+      print(u'Unknown8\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+          header_struct.unknown8))
+      print(u'Unknown9\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+          header_struct.unknown9))
+      print(u'Unknown10\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+          header_struct.unknown10))
+      print(u'Unknown11\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+          header_struct.unknown11))
+
+      # CLSID of StdFont: 0be35203-8f91-11ce-9de3-00aa004bb851
+      uuid_value = uuid.UUID(bytes_le=header_struct.unknown12)
+      print(u'Unknown12\t\t\t\t\t\t\t: {0:s}'.format(uuid_value))
+
+      print(u'')
+
+    while stream_offset < olecf_item.size:
+      entry_struct = self._ENTRY.parse(stream_data[stream_offset:])
+
+      next_stream_offset = stream_offset + (8 * 4) + len(entry_struct.variable_name) + 1
+
+      if self._debug:
+        print(u'f stream entry data:')
+        print(hexdump.Hexdump(stream_data[stream_offset:next_stream_offset]))
+
+      if self._debug:
+        print(u'Unknown1\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+            entry_struct.unknown1))
+        print(u'Unknown2\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+            entry_struct.unknown2))
+        print(u'Unknown3\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+            entry_struct.unknown3))
+        print(u'Variable name\t\t\t\t\t\t\t: {0:s}'.format(
+            entry_struct.variable_name))
+        print(u'Unknown4\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+            entry_struct.unknown4))
+        print(u'Unknown5\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+            entry_struct.unknown5))
+        print(u'Unknown6\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+            entry_struct.unknown6))
+        print(u'Unknown7\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+            entry_struct.unknown7))
+        print(u'Unknown8\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+            entry_struct.unknown8))
+
+        print(u'')
+
+      stream_offset = next_stream_offset
 
 
 class OStream(object):
@@ -86,7 +183,7 @@ class OStream(object):
     while stream_offset < olecf_item.size:
       entry_part1_struct = self._ENTRY_PART1.parse(stream_data[stream_offset:])
 
-      entry_part_size = (7 * 4) + len(entry_part1_struct.data)
+      entry_part_size = (7 * 4) + len(entry_part1_struct.data) + 1
       padding_size = entry_part_size % 4
       if padding_size != 0:
         padding_size = 4 - padding_size
@@ -95,7 +192,7 @@ class OStream(object):
 
       entry_part2_struct = self._ENTRY_PART2.parse(stream_data[next_stream_offset:])
 
-      entry_part_size = (5 * 4) + len(entry_part2_struct.font_name)
+      entry_part_size = (5 * 4) + len(entry_part2_struct.font_name) + 1
       padding_size = entry_part_size % 4
       if padding_size != 0:
         padding_size = 4 - padding_size
@@ -311,15 +408,6 @@ class VBACollector(object):
         if line.startswith(b'BaseClass='):
           _, _, base_clase = line.rpartition(b'=')
 
-      olecf_vba_item = olecf_macros_item.get_sub_item_by_name(u'VBA')
-      if not olecf_vba_item:
-        return
-
-      olecf_vba_project_item = olecf_vba_item.get_sub_item_by_name(
-          u'_VBA_PROJECT')
-      if not olecf_vba_project_item:
-        return
-
       if base_clase:
         # olecf_file.get_item_by_path('\\Root Entry\\Macros\\{0:s}\\f'.format(base_class))
 
@@ -335,10 +423,18 @@ class VBACollector(object):
             o_stream = OStream(debug=self._debug)
             o_stream.Read(olecf_o_item)
 
-      self.stream_found = True
+      olecf_vba_item = olecf_macros_item.get_sub_item_by_name(u'VBA')
+      if olecf_vba_item:
+        olecf_vba_project_item = olecf_vba_item.get_sub_item_by_name(
+            u'_VBA_PROJECT')
+        if olecf_vba_project_item:
+          self.stream_found = True
 
-      vba_project_stream = VBAProjectStream(debug=self._debug)
-      vba_project_stream.Read(olecf_vba_project_item)
+          vba_project_stream = VBAProjectStream(debug=self._debug)
+          vba_project_stream.Read(olecf_vba_project_item)
+
+        # olecf_vba_item.get_sub_item_by_name(u'dir')
+        # MS-OVBA: 2.4.1 Compression and Decompression
 
     finally:
       olecf_file.close()
