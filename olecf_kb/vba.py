@@ -10,6 +10,10 @@ import pyolecf
 from olecf_kb import hexdump
 
 
+if pyolecf.get_version() < u'20160814':
+  raise ImportWarning(u'vba.py requires pyolecf 20160814 or later.')
+
+
 class FStream(object):
   """Class that defines a f stream."""
 
@@ -64,8 +68,7 @@ class FStream(object):
     Returns:
       bool: True if the stream was successfully read.
     """
-    # TODO: add support for read with optional size argument.
-    stream_data = olecf_item.read(olecf_item.size)
+    stream_data = olecf_item.read()
 
     header_struct = self._HEADER.parse(stream_data)
 
@@ -193,8 +196,7 @@ class OStream(object):
     Returns:
       bool: True if the stream was successfully read.
     """
-    # TODO: add support for read with optional size argument.
-    stream_data = olecf_item.read(olecf_item.size)
+    stream_data = olecf_item.read()
 
     stream_offset = 0
     while stream_offset < olecf_item.size:
@@ -306,8 +308,7 @@ class VBAProjectStream(object):
     Returns:
       bool: True if the stream was successfully read.
     """
-    # TODO: add support for read with optional size argument.
-    stream_data = olecf_item.read(olecf_item.size)
+    stream_data = olecf_item.read()
 
     if self._debug:
       print(u'_VBA_PROJECT stream data:')
@@ -394,18 +395,7 @@ class VBACollector(object):
     olecf_file.open(source)
 
     try:
-      # TODO: replace by:
-      # olecf_file.get_item_by_path(u'\\Root Entry\\Macros\\VBA\\_VBA_PROJECT')
-
-      olecf_root_item = olecf_file.get_root_item()
-      if not olecf_root_item:
-        return
-
-      olecf_macros_item = olecf_root_item.get_sub_item_by_name(u'Macros')
-      if not olecf_macros_item:
-        return
-
-      olecf_macros_project_item = olecf_macros_item.get_sub_item_by_name(u'PROJECT')
+      olecf_macros_project_item = olecf_file.get_item_by_path(u'\\Macros\\PROJECT')
       if not olecf_macros_project_item:
         return
 
@@ -426,39 +416,35 @@ class VBACollector(object):
         print(u'PROJECT stream data:')
         print(stream_data)
 
-      base_clase = None
+      base_class = None
       for line in stream_data.split(b'\n'):
         line = line.strip()
         if line.startswith(b'BaseClass='):
-          _, _, base_clase = line.rpartition(b'=')
+          _, _, base_class = line.rpartition(b'=')
 
-      if base_clase:
-        # olecf_file.get_item_by_path('\\Root Entry\\Macros\\{0:s}\\f'.format(base_class))
+      if base_class:
+        olecf_path = u'\\Macros\\{0:s}\\f'.format(base_class
+        olecf_f_item = olecf_file.get_item_by_path(olecf_path)
+        if olecf_f_item:
+          f_stream = FStream(debug=self._debug)
+          f_stream.Read(olecf_f_item)
 
-        olecf_base_class_item = olecf_macros_item.get_sub_item_by_name(base_clase)
-        if olecf_base_class_item:
-          olecf_f_item = olecf_base_class_item.get_sub_item_by_name(u'f')
-          if olecf_f_item:
-            f_stream = FStream(debug=self._debug)
-            f_stream.Read(olecf_f_item)
+        olecf_path = u'\\Macros\\{0:s}\\o'.format(base_class
+        olecf_o_item = olecf_file.get_item_by_path(olecf_path)
+        if olecf_o_item:
+          o_stream = OStream(debug=self._debug)
+          o_stream.Read(olecf_o_item)
 
-          olecf_o_item = olecf_base_class_item.get_sub_item_by_name(u'o')
-          if olecf_o_item:
-            o_stream = OStream(debug=self._debug)
-            o_stream.Read(olecf_o_item)
+      olecf_vba_project_item = olecf_file.get_item_by_path(
+          u'\\Macros\\VBA\\_VBA_PROJECT')
+      if olecf_vba_project_item:
+        self.stream_found = True
 
-      olecf_vba_item = olecf_macros_item.get_sub_item_by_name(u'VBA')
-      if olecf_vba_item:
-        olecf_vba_project_item = olecf_vba_item.get_sub_item_by_name(
-            u'_VBA_PROJECT')
-        if olecf_vba_project_item:
-          self.stream_found = True
+        vba_project_stream = VBAProjectStream(debug=self._debug)
+        vba_project_stream.Read(olecf_vba_project_item)
 
-          vba_project_stream = VBAProjectStream(debug=self._debug)
-          vba_project_stream.Read(olecf_vba_project_item)
-
-        # olecf_vba_item.get_sub_item_by_name(u'dir')
-        # MS-OVBA: 2.4.1 Compression and Decompression
+      # olecf_vba_item.get_sub_item_by_name(u'dir')
+      # MS-OVBA: 2.4.1 Compression and Decompression
 
     finally:
       olecf_file.close()
