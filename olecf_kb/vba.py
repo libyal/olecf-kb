@@ -10,43 +10,43 @@ import pyolecf
 from olecf_kb import hexdump
 
 
-if pyolecf.get_version() < u'20160814':
-  raise ImportWarning(u'vba.py requires pyolecf 20160814 or later.')
+if pyolecf.get_version() < '20160814':
+  raise ImportWarning('vba.py requires pyolecf 20160814 or later.')
 
 
 class FStream(object):
   """Class that defines a f stream."""
 
   _HEADER = construct.Struct(
-      u'header',
-      construct.ULInt32(u'unknown1'),
-      construct.ULInt32(u'unknown2'),
-      construct.ULInt32(u'unknown3'),
-      construct.ULInt32(u'unknown4'),
-      construct.ULInt32(u'unknown5'),
-      construct.ULInt32(u'unknown6'),
-      construct.ULInt32(u'unknown7'),
-      construct.ULInt32(u'unknown8'),
-      construct.ULInt32(u'unknown9'),
-      construct.ULInt32(u'unknown10'),
-      construct.ULInt32(u'unknown11'),
-      construct.Bytes(u'unknown12', 16),
-      construct.Bytes(u'unknown13', 23))
+      'header',
+      construct.ULInt32('unknown1'),
+      construct.ULInt32('unknown2'),
+      construct.ULInt32('unknown3'),
+      construct.ULInt32('unknown4'),
+      construct.ULInt32('unknown5'),
+      construct.ULInt32('unknown6'),
+      construct.ULInt32('unknown7'),
+      construct.ULInt32('unknown8'),
+      construct.ULInt32('unknown9'),
+      construct.ULInt32('unknown10'),
+      construct.ULInt32('unknown11'),
+      construct.Bytes('unknown12', 16),
+      construct.Bytes('unknown13', 23))
 
   _ENTRY = construct.Struct(
-      u'entry',
-      construct.ULInt32(u'unknown7'),
-      construct.ULInt32(u'unknown8'),
-      construct.ULInt16(u'unknown9'),
+      'entry',
+      construct.ULInt32('unknown7'),
+      construct.ULInt32('unknown8'),
+      construct.ULInt16('unknown9'),
       # Does not include the 2 bytes of the size value.
-      construct.ULInt16(u'size'),
-      construct.ULInt32(u'unknown1'),
-      construct.ULInt32(u'unknown2'),
-      construct.ULInt32(u'unknown3'),
-      construct.ULInt32(u'o_stream_entry_size'),
-      construct.ULInt16(u'o_stream_entry_index'),
-      construct.ULInt16(u'unknown6'),
-      construct.Bytes(u'variable_name', lambda ctx: ctx.size - 28))
+      construct.ULInt16('size'),
+      construct.ULInt32('unknown1'),
+      construct.ULInt32('unknown2'),
+      construct.ULInt32('unknown3'),
+      construct.ULInt32('o_stream_entry_size'),
+      construct.ULInt16('o_stream_entry_index'),
+      construct.ULInt16('unknown6'),
+      construct.Bytes('variable_name', lambda ctx: ctx.size - 28))
 
   # TODO: - 28 does not hold for the last entry but size does.
 
@@ -75,38 +75,38 @@ class FStream(object):
     stream_offset = self._HEADER.sizeof()
 
     if self._debug:
-      print(u'f stream header data:')
+      print('f stream header data:')
       print(hexdump.Hexdump(stream_data[:stream_offset]))
 
     if self._debug:
-      print(u'Unknown1\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+      print('Unknown1\t\t\t\t\t\t\t: 0x{0:08x}'.format(
           header_struct.unknown1))
-      print(u'Unknown2\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+      print('Unknown2\t\t\t\t\t\t\t: 0x{0:08x}'.format(
           header_struct.unknown2))
-      print(u'Unknown3\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+      print('Unknown3\t\t\t\t\t\t\t: 0x{0:08x}'.format(
           header_struct.unknown3))
-      print(u'Unknown4\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+      print('Unknown4\t\t\t\t\t\t\t: 0x{0:08x}'.format(
           header_struct.unknown4))
-      print(u'Unknown5\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+      print('Unknown5\t\t\t\t\t\t\t: 0x{0:08x}'.format(
           header_struct.unknown5))
-      print(u'Unknown6\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+      print('Unknown6\t\t\t\t\t\t\t: 0x{0:08x}'.format(
           header_struct.unknown6))
-      print(u'Unknown7\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+      print('Unknown7\t\t\t\t\t\t\t: 0x{0:08x}'.format(
           header_struct.unknown7))
-      print(u'Unknown8\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+      print('Unknown8\t\t\t\t\t\t\t: 0x{0:08x}'.format(
           header_struct.unknown8))
-      print(u'Unknown9\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+      print('Unknown9\t\t\t\t\t\t\t: 0x{0:08x}'.format(
           header_struct.unknown9))
-      print(u'Unknown10\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+      print('Unknown10\t\t\t\t\t\t\t: 0x{0:08x}'.format(
           header_struct.unknown10))
-      print(u'Unknown11\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+      print('Unknown11\t\t\t\t\t\t\t: 0x{0:08x}'.format(
           header_struct.unknown11))
 
       # CLSID of StdFont: 0be35203-8f91-11ce-9de3-00aa004bb851
       uuid_value = uuid.UUID(bytes_le=header_struct.unknown12)
-      print(u'Unknown12\t\t\t\t\t\t\t: {0:s}'.format(uuid_value))
+      print('Unknown12\t\t\t\t\t\t\t: {0:s}'.format(uuid_value))
 
-      print(u'')
+      print('')
 
     while stream_offset < olecf_item.size:
       try:
@@ -117,66 +117,68 @@ class FStream(object):
       next_stream_offset = stream_offset + 2 + entry_struct.size + 2
 
       if self._debug:
-        print(u'f stream entry data:')
+        print('f stream entry data:')
         print(hexdump.Hexdump(stream_data[stream_offset:next_stream_offset]))
 
       if self._debug:
-        print(u'Unknown7\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+        print('Unknown7\t\t\t\t\t\t\t: 0x{0:08x}'.format(
             entry_struct.unknown7))
-        print(u'Unknown8\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+        print('Unknown8\t\t\t\t\t\t\t: 0x{0:08x}'.format(
             entry_struct.unknown8))
-        print(u'Unknown9\t\t\t\t\t\t\t: 0x{0:04x}'.format(
+        print('Unknown9\t\t\t\t\t\t\t: 0x{0:04x}'.format(
             entry_struct.unknown9))
 
-        print(u'Size\t\t\t\t\t\t\t\t: {0:d}'.format(entry_struct.size))
+        print('Size\t\t\t\t\t\t\t\t: {0:d}'.format(entry_struct.size))
 
-        print(u'Unknown1\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+        print('Unknown1\t\t\t\t\t\t\t: 0x{0:08x}'.format(
             entry_struct.unknown1))
-        print(u'Unknown2\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+        print('Unknown2\t\t\t\t\t\t\t: 0x{0:08x}'.format(
             entry_struct.unknown2))
-        print(u'Unknown3\t\t\t\t\t\t\t: {0:d}'.format(
+        print('Unknown3\t\t\t\t\t\t\t: {0:d}'.format(
             entry_struct.unknown3))
-        print(u'O stream entry size\t\t\t\t\t\t: {0:0d}'.format(
+        print('O stream entry size\t\t\t\t\t\t: {0:0d}'.format(
             entry_struct.o_stream_entry_size))
-        print(u'O stream entry index\t\t\t\t\t\t: {0:d}'.format(
+        print('O stream entry index\t\t\t\t\t\t: {0:d}'.format(
             entry_struct.o_stream_entry_index))
-        print(u'Unknown6\t\t\t\t\t\t\t: 0x{0:04x}'.format(
+        print('Unknown6\t\t\t\t\t\t\t: 0x{0:04x}'.format(
             entry_struct.unknown6))
 
         # TODO: fix this.
         try:
-          variable_name = entry_struct.variable_name.decode(u'cp1252')
-          print(u'Variable name\t\t\t\t\t\t\t: {0:s}'.format(variable_name))
+          variable_name = entry_struct.variable_name.decode('cp1252')
+          print('Variable name\t\t\t\t\t\t\t: {0:s}'.format(variable_name))
         except UnicodeEncodeError:
           pass
 
-        print(u'')
+        print('')
 
       stream_offset = next_stream_offset
+
+    return True
 
 
 class OStream(object):
   """Class that defines an o stream."""
 
   _ENTRY_PART1 = construct.Struct(
-      u'entry_part1',
-      construct.ULInt32(u'unknown1'),
-      construct.ULInt32(u'unknown2'),
-      construct.ULInt32(u'unknown3'),
-      construct.ULInt32(u'unknown4'),
-      construct.ULInt32(u'data_size'),
-      construct.ULInt32(u'unknown6'),
-      construct.ULInt32(u'unknown7'),
-      construct.CString(u'data'))
+      'entry_part1',
+      construct.ULInt32('unknown1'),
+      construct.ULInt32('unknown2'),
+      construct.ULInt32('unknown3'),
+      construct.ULInt32('unknown4'),
+      construct.ULInt32('data_size'),
+      construct.ULInt32('unknown6'),
+      construct.ULInt32('unknown7'),
+      construct.CString('data'))
 
   _ENTRY_PART2 = construct.Struct(
-      u'entry_part2',
-      construct.ULInt32(u'unknown7'),
-      construct.ULInt32(u'unknown8'),
-      construct.ULInt32(u'unknown9'),
-      construct.ULInt32(u'unknown10'),
-      construct.ULInt32(u'unknown11'),
-      construct.CString(u'font_name'))
+      'entry_part2',
+      construct.ULInt32('unknown7'),
+      construct.ULInt32('unknown8'),
+      construct.ULInt32('unknown9'),
+      construct.ULInt32('unknown10'),
+      construct.ULInt32('unknown11'),
+      construct.CString('font_name'))
 
   def __init__(self, debug=False):
     """Initializes a stream.
@@ -201,7 +203,8 @@ class OStream(object):
     stream_offset = 0
     while stream_offset < olecf_item.size:
       try:
-        entry_part1_struct = self._ENTRY_PART1.parse(stream_data[stream_offset:])
+        entry_part1_struct = self._ENTRY_PART1.parse(
+            stream_data[stream_offset:])
       except construct.core.FieldError:
         break
 
@@ -213,7 +216,8 @@ class OStream(object):
       next_stream_offset = stream_offset + entry_part_size + padding_size
 
       try:
-        entry_part2_struct = self._ENTRY_PART2.parse(stream_data[next_stream_offset:])
+        entry_part2_struct = self._ENTRY_PART2.parse(
+            stream_data[next_stream_offset:])
       except construct.core.FieldError:
         break
 
@@ -225,70 +229,73 @@ class OStream(object):
       next_stream_offset += entry_part_size + padding_size
 
       if self._debug:
-        print(u'o stream entry data:')
+        print('o stream entry data:')
         print(hexdump.Hexdump(stream_data[stream_offset:next_stream_offset]))
 
       # TODO: add debug info.
       if self._debug:
-        print(u'Unknown1\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+        print('Unknown1\t\t\t\t\t\t\t: 0x{0:08x}'.format(
             entry_part1_struct.unknown1))
-        print(u'Unknown2\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+        print('Unknown2\t\t\t\t\t\t\t: 0x{0:08x}'.format(
             entry_part1_struct.unknown2))
-        print(u'Unknown3\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+        print('Unknown3\t\t\t\t\t\t\t: 0x{0:08x}'.format(
             entry_part1_struct.unknown3))
-        print(u'Unknown4\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+        print('Unknown4\t\t\t\t\t\t\t: 0x{0:08x}'.format(
             entry_part1_struct.unknown4))
-        print(u'Data size\t\t\t\t\t\t\t: {0:d} (0x{1:08x})'.format(
+        print('Data size\t\t\t\t\t\t\t: {0:d} (0x{1:08x})'.format(
             entry_part1_struct.data_size & 0x7fffffff,
             entry_part1_struct.data_size))
-        print(u'Unknown6\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+        print('Unknown6\t\t\t\t\t\t\t: 0x{0:08x}'.format(
             entry_part1_struct.unknown6))
-        print(u'Data\t\t\t\t\t\t\t\t: {0:s}'.format(entry_part1_struct.data))
+        print('Data\t\t\t\t\t\t\t\t: {0:s}'.format(entry_part1_struct.data))
         # TODO: alignment padding.
-        print(u'Unknown7\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+        print('Unknown7\t\t\t\t\t\t\t: 0x{0:08x}'.format(
             entry_part2_struct.unknown7))
-        print(u'Unknown8\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+        print('Unknown8\t\t\t\t\t\t\t: 0x{0:08x}'.format(
             entry_part2_struct.unknown8))
-        print(u'Unknown9\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+        print('Unknown9\t\t\t\t\t\t\t: 0x{0:08x}'.format(
             entry_part2_struct.unknown9))
-        print(u'Unknown10\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+        print('Unknown10\t\t\t\t\t\t\t: 0x{0:08x}'.format(
             entry_part2_struct.unknown10))
-        print(u'Unknown11\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+        print('Unknown11\t\t\t\t\t\t\t: 0x{0:08x}'.format(
             entry_part2_struct.unknown11))
-        print(u'Font name\t\t\t\t\t\t\t: {0:s}'.format(
+        print('Font name\t\t\t\t\t\t\t: {0:s}'.format(
             entry_part2_struct.font_name))
         # TODO: alignment padding.
-        print(u'')
+        print('')
 
       stream_offset = next_stream_offset
+
+    return True
 
 
 class VBAProjectStream(object):
   """Class that defines a _VBA_PROJECT (Preformance Cache) stream."""
 
   _HEADER = construct.Struct(
-      u'header',
-      construct.ULInt32(u'unknown1'),
-      construct.ULInt16(u'unknown2'),
-      construct.ULInt16(u'unknown3'),
-      construct.ULInt32(u'unknown4'),
-      construct.ULInt32(u'unknown5'),
-      construct.ULInt32(u'unknown6'),
-      construct.ULInt32(u'unknown7'),
-      construct.ULInt32(u'unknown8'),
-      construct.ULInt16(u'unknown9'),
-      construct.ULInt16(u'number_of_strings'),
-      construct.ULInt16(u'unknown11'))
+      'header',
+      construct.ULInt32('unknown1'),
+      construct.ULInt16('unknown2'),
+      construct.ULInt16('unknown3'),
+      construct.ULInt32('unknown4'),
+      construct.ULInt32('unknown5'),
+      construct.ULInt32('unknown6'),
+      construct.ULInt32('unknown7'),
+      construct.ULInt32('unknown8'),
+      construct.ULInt16('unknown9'),
+      construct.ULInt16('number_of_strings'),
+      construct.ULInt16('unknown11'))
 
   _STRING = construct.Struct(
-      u'string',
-      construct.ULInt16(u'string_size'),  # Does not include the end-of-string character.
+      'string',
+      # Does not include the end-of-string character.
+      construct.ULInt16('string_size'),
       construct.Bytes(
-          u'string',
+          'string',
           lambda ctx: ctx.string_size),
-      construct.ULInt32(u'unknown1'),
-      construct.ULInt32(u'unknown2'),
-      construct.ULInt32(u'unknown3'))
+      construct.ULInt32('unknown1'),
+      construct.ULInt32('unknown2'),
+      construct.ULInt32('unknown3'))
 
   def __init__(self, debug=False):
     """Initializes a stream.
@@ -311,57 +318,59 @@ class VBAProjectStream(object):
     stream_data = olecf_item.read()
 
     if self._debug:
-      print(u'_VBA_PROJECT stream data:')
+      print('_VBA_PROJECT stream data:')
       print(hexdump.Hexdump(stream_data))
 
     header_struct = self._HEADER.parse(stream_data)
 
     if self._debug:
-      print(u'Unknown1\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+      print('Unknown1\t\t\t\t\t\t\t: 0x{0:08x}'.format(
           header_struct.unknown1))
-      print(u'Unknown2\t\t\t\t\t\t\t: 0x{0:04x}'.format(
+      print('Unknown2\t\t\t\t\t\t\t: 0x{0:04x}'.format(
           header_struct.unknown2))
-      print(u'Unknown3\t\t\t\t\t\t\t: 0x{0:04x}'.format(
+      print('Unknown3\t\t\t\t\t\t\t: 0x{0:04x}'.format(
           header_struct.unknown3))
-      print(u'Unknown4\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+      print('Unknown4\t\t\t\t\t\t\t: 0x{0:08x}'.format(
           header_struct.unknown4))
-      print(u'Unknown5\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+      print('Unknown5\t\t\t\t\t\t\t: 0x{0:08x}'.format(
           header_struct.unknown5))
-      print(u'Unknown6\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+      print('Unknown6\t\t\t\t\t\t\t: 0x{0:08x}'.format(
           header_struct.unknown6))
-      print(u'Unknown7\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+      print('Unknown7\t\t\t\t\t\t\t: 0x{0:08x}'.format(
           header_struct.unknown7))
-      print(u'Unknown8\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+      print('Unknown8\t\t\t\t\t\t\t: 0x{0:08x}'.format(
           header_struct.unknown8))
-      print(u'Unknown9\t\t\t\t\t\t\t: {0:d}'.format(
+      print('Unknown9\t\t\t\t\t\t\t: {0:d}'.format(
           header_struct.unknown9))
-      print(u'Number of strings\t\t\t\t\t\t: {0:d}'.format(
+      print('Number of strings\t\t\t\t\t\t: {0:d}'.format(
           header_struct.number_of_strings))
-      print(u'Unknown11\t\t\t\t\t\t\t: {0:d}'.format(
+      print('Unknown11\t\t\t\t\t\t\t: {0:d}'.format(
           header_struct.unknown11))
-      print(u'')
+      print('')
 
     stream_data_offset = self._HEADER.sizeof()
     for string_index in range(header_struct.number_of_strings):
       string_struct = self._STRING.parse(stream_data[stream_data_offset:])
-      value_string = string_struct.string.decode(u'utf-16-le')
+      value_string = string_struct.string.decode('utf-16-le')
 
       if self._debug:
-        print(u'String: {0:d} size\t\t\t\t\t\t\t: {1:d}'.format(
+        print('String: {0:d} size\t\t\t\t\t\t\t: {1:d}'.format(
             string_index, string_struct.string_size))
-        print(u'String: {0:d}\t\t\t\t\t\t\t: {1:s}'.format(
+        print('String: {0:d}\t\t\t\t\t\t\t: {1:s}'.format(
             string_index, value_string))
-        print(u'Unknown1\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+        print('Unknown1\t\t\t\t\t\t\t: 0x{0:08x}'.format(
             string_struct.unknown1))
-        print(u'Unknown2\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+        print('Unknown2\t\t\t\t\t\t\t: 0x{0:08x}'.format(
             string_struct.unknown2))
-        print(u'Unknown3\t\t\t\t\t\t\t: 0x{0:08x}'.format(
+        print('Unknown3\t\t\t\t\t\t\t: 0x{0:08x}'.format(
             string_struct.unknown3))
 
       stream_data_offset += 14 + string_struct.string_size
 
     if self._debug:
-      print(u'')
+      print('')
+
+    return True
 
 
 class VBACollector(object):
@@ -395,11 +404,13 @@ class VBACollector(object):
     olecf_file.open(source)
 
     try:
-      olecf_macros_project_item = olecf_file.get_item_by_path(u'\\Macros\\PROJECT')
+      olecf_macros_project_item = olecf_file.get_item_by_path(
+          '\\Macros\\PROJECT')
       if not olecf_macros_project_item:
         return
 
-      stream_data = olecf_macros_project_item.read(olecf_macros_project_item.size)
+      stream_data = olecf_macros_project_item.read(
+          olecf_macros_project_item.size)
       if self._debug:
         # ID="{%GUID%}"
         # Document=ThisDocument/&H00000000
@@ -413,7 +424,7 @@ class VBACollector(object):
         # DPB="%IDENTIFIER%"
         # GC="%IDENTIFIER%"
 
-        print(u'PROJECT stream data:')
+        print('PROJECT stream data:')
         print(stream_data)
 
       base_class = None
@@ -423,27 +434,27 @@ class VBACollector(object):
           _, _, base_class = line.rpartition(b'=')
 
       if base_class:
-        olecf_path = u'\\Macros\\{0:s}\\f'.format(base_class
+        olecf_path = '\\Macros\\{0:s}\\f'.format(base_class)
         olecf_f_item = olecf_file.get_item_by_path(olecf_path)
         if olecf_f_item:
           f_stream = FStream(debug=self._debug)
           f_stream.Read(olecf_f_item)
 
-        olecf_path = u'\\Macros\\{0:s}\\o'.format(base_class
+        olecf_path = '\\Macros\\{0:s}\\o'.format(base_class)
         olecf_o_item = olecf_file.get_item_by_path(olecf_path)
         if olecf_o_item:
           o_stream = OStream(debug=self._debug)
           o_stream.Read(olecf_o_item)
 
       olecf_vba_project_item = olecf_file.get_item_by_path(
-          u'\\Macros\\VBA\\_VBA_PROJECT')
+          '\\Macros\\VBA\\_VBA_PROJECT')
       if olecf_vba_project_item:
         self.stream_found = True
 
         vba_project_stream = VBAProjectStream(debug=self._debug)
         vba_project_stream.Read(olecf_vba_project_item)
 
-      # olecf_vba_item.get_sub_item_by_name(u'dir')
+      # olecf_vba_item.get_sub_item_by_name('dir')
       # MS-OVBA: 2.4.1 Compression and Decompression
 
     finally:
