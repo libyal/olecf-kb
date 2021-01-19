@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """Script to extract Visual Basic for Applications (VBA)."""
 
-from __future__ import print_function
 import argparse
 import logging
 import sys

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Visual Basic for Applications (VBA) collector."""
 
-from __future__ import print_function
 import uuid
 
 import construct
