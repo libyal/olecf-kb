@@ -1,2 +1,3 @@
 pip >= 7.0.0
+dtfabric >= 20170524
 libolecf-python >= 20151223
