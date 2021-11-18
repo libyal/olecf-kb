@@ -151,6 +151,30 @@ else:
       return python_spec_file
 
 
+def parse_requirements_from_file(path):
+  """Parses requirements from a requirements file.
+
+  Args:
+    path (str): path to the requirements file.
+
+  Yields:
+    str: name and optional version information of the required package.
+  """
+  with open(path, 'r') as file_object:
+    file_contents = file_object.read()
+
+  for requirement in pkg_resources.parse_requirements(file_contents):
+    try:
+      name = str(requirement.req)
+    except AttributeError:
+      name = str(requirement)
+
+    if name.startswith('pip '):
+      continue
+
+    yield name
+
+
 olecfrc_description = (
     'Object Linking and Embedding (OLE) Compound File resources (olecfrc)')
 
@@ -186,4 +210,6 @@ setup(
         ('share/doc/olecfrc', [
             'LICENSE', 'README']),
     ],
+    install_requires=parse_requirements_from_file('requirements.txt'),
+    tests_require=parse_requirements_from_file('test_requirements.txt'),
 )
