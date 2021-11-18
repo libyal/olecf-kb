@@ -6,7 +6,7 @@ import argparse
 import logging
 import sys
 
-from olecf_kb import vba
+from olecfrc import vba
 
 
 class StdoutWriter(object):

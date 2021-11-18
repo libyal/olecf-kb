@@ -1,0 +1,189 @@
+name: vba
+type: format
+description: Visual Basic for Applications (VBA) formats
+---
+name: byte
+type: integer
+attributes:
+  format: unsigned
+  size: 1
+  units: bytes
+---
+name: char
+type: integer
+attributes:
+  format: signed
+  size: 1
+  units: bytes
+---
+name: uint16
+type: integer
+attributes:
+  format: unsigned
+  size: 2
+  units: bytes
+---
+name: uint32
+type: integer
+attributes:
+  format: unsigned
+  size: 4
+  units: bytes
+---
+name: cstring
+type: string
+encoding: ascii
+element_data_type: char
+elements_terminator: "\x00"
+---
+name: f_stream_header
+type: structure
+attributes:
+  byte_order: little-endian
+members:
+- name: unknown1
+  data_type: uint32
+- name: unknown2
+  data_type: uint32
+- name: unknown3
+  data_type: uint32
+- name: unknown4
+  data_type: uint32
+- name: unknown5
+  data_type: uint32
+- name: unknown6
+  data_type: uint32
+- name: unknown7
+  data_type: uint32
+- name: unknown8
+  data_type: uint32
+- name: unknown9
+  data_type: uint32
+- name: unknown10
+  data_type: uint32
+- name: unknown11
+  data_type: uint32
+- name: unknown12
+  type: stream
+  element_data_type: byte
+  elements_data_size: 16
+- name: unknown13
+  type: stream
+  element_data_type: byte
+  elements_data_size: 23
+---
+name: f_stream_entry
+type: structure
+attributes:
+  byte_order: little-endian
+members:
+- name: unknown7
+  data_type: uint32
+- name: unknown8
+  data_type: uint32
+- name: unknown9
+  data_type: uint16
+- name: size
+  desription: Does not include the 2 bytes of the size itself
+  data_type: uint16
+- name: unknown1
+  data_type: uint32
+- name: unknown2
+  data_type: uint32
+- name: unknown3
+  data_type: uint32
+- name: o_stream_entry_size
+  data_type: uint32
+- name: o_stream_entry_index
+  data_type: uint16
+- name: unknown6
+  data_type: uint16
+- name: unknown13
+  type: stream
+  element_data_type: byte
+  elements_data_size: f_stream_entry.size
+---
+name: o_entry_part1
+type: structure
+attributes:
+  byte_order: little-endian
+members:
+- name: unknown1
+  data_type: uint32
+- name: unknown2
+  data_type: uint32
+- name: unknown3
+  data_type: uint32
+- name: unknown4
+  data_type: uint32
+- name: data_size
+  data_type: uint32
+- name: unknown5
+  data_type: uint32
+- name: unknown7
+  data_type: uint32
+- name: data
+  data_type: cstring
+---
+name: o_entry_part2
+type: structure
+attributes:
+  byte_order: little-endian
+members:
+- name: unknown7
+  data_type: uint32
+- name: unknown8
+  data_type: uint32
+- name: unknown9
+  data_type: uint32
+- name: unknown10
+  data_type: uint32
+- name: unknown11
+  data_type: uint32
+- name: font_name
+  data_type: cstring
+---
+name: project_stream_header
+type: structure
+attributes:
+  byte_order: little-endian
+members:
+- name: unknown1
+  data_type: uint32
+- name: unknown2
+  data_type: uint16
+- name: unknown3
+  data_type: uint16
+- name: unknown4
+  data_type: uint32
+- name: unknown5
+  data_type: uint32
+- name: unknown6
+  data_type: uint32
+- name: unknown7
+  data_type: uint32
+- name: unknown8
+  data_type: uint32
+- name: unknown9
+  data_type: uint16
+- name: number_of_strings
+  data_type: uint16
+- name: unknown11
+  data_type: uint16
+---
+name: project_stream_string
+type: structure
+attributes:
+  byte_order: little-endian
+members:
+- name: string_size
+  data_type: uint16
+- name: string
+  element_data_type: byte
+  element_data_size: project_stream_string.string_size
+- name: unknown1
+  data_type: uint32
+- name: unknown2
+  data_type: uint32
+- name: unknown3
+  data_type: uint32

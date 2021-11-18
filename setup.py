@@ -205,6 +205,11 @@ setup(
     package_dir={
         'olecfrc': 'olecfrc'
     },
+    include_package_data=True,
+    package_data={
+        'olecfrc': ['*.yaml']
+    },
+    zip_safe=False,
     scripts=glob.glob(os.path.join('scripts', '[a-z]*.py')),
     data_files=[
         ('share/doc/olecfrc', [

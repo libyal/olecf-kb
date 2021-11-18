@@ -3,51 +3,19 @@
 
 import uuid
 
-import construct
 import pyolecf
 
-from olecf_kb import hexdump
+from dtfabric import errors as dtfabric_errors
+
+from olecfrc import data_format
+from olecfrc import errors
+from olecfrc import hexdump
 
 
-if pyolecf.get_version() < '20160814':
-  raise ImportWarning('vba.py requires pyolecf 20160814 or later.')
-
-
-class FStream(object):
+class FStream(data_format.BinaryDataFormat):
   """Class that defines a f stream."""
 
-  _HEADER = construct.Struct(
-      'header',
-      construct.ULInt32('unknown1'),
-      construct.ULInt32('unknown2'),
-      construct.ULInt32('unknown3'),
-      construct.ULInt32('unknown4'),
-      construct.ULInt32('unknown5'),
-      construct.ULInt32('unknown6'),
-      construct.ULInt32('unknown7'),
-      construct.ULInt32('unknown8'),
-      construct.ULInt32('unknown9'),
-      construct.ULInt32('unknown10'),
-      construct.ULInt32('unknown11'),
-      construct.Bytes('unknown12', 16),
-      construct.Bytes('unknown13', 23))
-
-  _ENTRY = construct.Struct(
-      'entry',
-      construct.ULInt32('unknown7'),
-      construct.ULInt32('unknown8'),
-      construct.ULInt16('unknown9'),
-      # Does not include the 2 bytes of the size value.
-      construct.ULInt16('size'),
-      construct.ULInt32('unknown1'),
-      construct.ULInt32('unknown2'),
-      construct.ULInt32('unknown3'),
-      construct.ULInt32('o_stream_entry_size'),
-      construct.ULInt16('o_stream_entry_index'),
-      construct.ULInt16('unknown6'),
-      construct.Bytes('variable_name', lambda ctx: ctx.size - 28))
-
-  # TODO: - 28 does not hold for the last entry but size does.
+  _DEFINITION_FILE = 'vba.yaml'
 
   def __init__(self, debug=False):
     """Initializes a stream.
@@ -66,12 +34,22 @@ class FStream(object):
 
     Returns:
       bool: True if the stream was successfully read.
+
+    Raises:
+      ParseError: if the stream data could not be parsed.
     """
     stream_data = olecf_item.read()
 
-    header_struct = self._HEADER.parse(stream_data)
+    data_type_map = self._GetDataTypeMap('f_stream_header')
 
-    stream_offset = self._HEADER.sizeof()
+    try:
+      header_struct = data_type_map.MapByteStream(stream_data)
+    except (
+        dtfabric_errors.ByteStreamTooSmallError,
+        dtfabric_errors.MappingError) as exception:
+      raise errors.ParseError(exception)
+
+    stream_offset = data_type_map.GetByteSize()
 
     if self._debug:
       print('f stream header data:')
@@ -107,11 +85,15 @@ class FStream(object):
 
       print('')
 
+    data_type_map = self._GetDataTypeMap('f_stream_entry')
+
     while stream_offset < olecf_item.size:
       try:
-        entry_struct = self._ENTRY.parse(stream_data[stream_offset:])
-      except construct.core.FieldError:
-        break
+        entry_struct = data_type_map.MapByteStream(stream_data[stream_offset:])
+      except (
+          dtfabric_errors.ByteStreamTooSmallError,
+          dtfabric_errors.MappingError) as exception:
+        raise errors.ParseError(exception)
 
       next_stream_offset = stream_offset + 2 + entry_struct.size + 2
 
@@ -156,28 +138,10 @@ class FStream(object):
     return True
 
 
-class OStream(object):
+class OStream(data_format.BinaryDataFormat):
   """Class that defines an o stream."""
 
-  _ENTRY_PART1 = construct.Struct(
-      'entry_part1',
-      construct.ULInt32('unknown1'),
-      construct.ULInt32('unknown2'),
-      construct.ULInt32('unknown3'),
-      construct.ULInt32('unknown4'),
-      construct.ULInt32('data_size'),
-      construct.ULInt32('unknown6'),
-      construct.ULInt32('unknown7'),
-      construct.CString('data'))
-
-  _ENTRY_PART2 = construct.Struct(
-      'entry_part2',
-      construct.ULInt32('unknown7'),
-      construct.ULInt32('unknown8'),
-      construct.ULInt32('unknown9'),
-      construct.ULInt32('unknown10'),
-      construct.ULInt32('unknown11'),
-      construct.CString('font_name'))
+  _DEFINITION_FILE = 'vba.yaml'
 
   def __init__(self, debug=False):
     """Initializes a stream.
@@ -196,16 +160,24 @@ class OStream(object):
 
     Returns:
       bool: True if the stream was successfully read.
+
+    Raises:
+      ParseError: if the stream data could not be parsed.
     """
     stream_data = olecf_item.read()
+
+    data_type_map1 = self._GetDataTypeMap('o_entry_part1')
+    data_type_map2 = self._GetDataTypeMap('o_entry_part2')
 
     stream_offset = 0
     while stream_offset < olecf_item.size:
       try:
-        entry_part1_struct = self._ENTRY_PART1.parse(
+        entry_part1_struct = data_type_map1.MapByteStream(
             stream_data[stream_offset:])
-      except construct.core.FieldError:
-        break
+      except (
+          dtfabric_errors.ByteStreamTooSmallError,
+          dtfabric_errors.MappingError) as exception:
+        raise errors.ParseError(exception)
 
       entry_part_size = (7 * 4) + len(entry_part1_struct.data) + 1
       padding_size = entry_part_size % 4
@@ -215,10 +187,12 @@ class OStream(object):
       next_stream_offset = stream_offset + entry_part_size + padding_size
 
       try:
-        entry_part2_struct = self._ENTRY_PART2.parse(
+        entry_part2_struct = data_type_map2.MapByteStream(
             stream_data[next_stream_offset:])
-      except construct.core.FieldError:
-        break
+      except (
+          dtfabric_errors.ByteStreamTooSmallError,
+          dtfabric_errors.MappingError) as exception:
+        raise errors.ParseError(exception)
 
       entry_part_size = (5 * 4) + len(entry_part2_struct.font_name) + 1
       padding_size = entry_part_size % 4
@@ -268,33 +242,10 @@ class OStream(object):
     return True
 
 
-class VBAProjectStream(object):
-  """Class that defines a _VBA_PROJECT (Preformance Cache) stream."""
+class VBAProjectStream(data_format.BinaryDataFormat):
+  """Class that defines a _VBA_PROJECT (Performance Cache) stream."""
 
-  _HEADER = construct.Struct(
-      'header',
-      construct.ULInt32('unknown1'),
-      construct.ULInt16('unknown2'),
-      construct.ULInt16('unknown3'),
-      construct.ULInt32('unknown4'),
-      construct.ULInt32('unknown5'),
-      construct.ULInt32('unknown6'),
-      construct.ULInt32('unknown7'),
-      construct.ULInt32('unknown8'),
-      construct.ULInt16('unknown9'),
-      construct.ULInt16('number_of_strings'),
-      construct.ULInt16('unknown11'))
-
-  _STRING = construct.Struct(
-      'string',
-      # Does not include the end-of-string character.
-      construct.ULInt16('string_size'),
-      construct.Bytes(
-          'string',
-          lambda ctx: ctx.string_size),
-      construct.ULInt32('unknown1'),
-      construct.ULInt32('unknown2'),
-      construct.ULInt32('unknown3'))
+  _DEFINITION_FILE = 'vba.yaml'
 
   def __init__(self, debug=False):
     """Initializes a stream.
@@ -313,6 +264,9 @@ class VBAProjectStream(object):
 
     Returns:
       bool: True if the stream was successfully read.
+
+    Raises:
+      ParseError: if the stream data could not be parsed.
     """
     stream_data = olecf_item.read()
 
@@ -320,7 +274,16 @@ class VBAProjectStream(object):
       print('_VBA_PROJECT stream data:')
       print(hexdump.Hexdump(stream_data))
 
-    header_struct = self._HEADER.parse(stream_data)
+    data_type_map = self._GetDataTypeMap('project_stream_header')
+
+    try:
+      header_struct = data_type_map.MapByteStream(stream_data)
+    except (
+        dtfabric_errors.ByteStreamTooSmallError,
+        dtfabric_errors.MappingError) as exception:
+      raise errors.ParseError(exception)
+
+    stream_data_offset = data_type_map.GetByteSize()
 
     if self._debug:
       print('Unknown1\t\t\t\t\t\t\t: 0x{0:08x}'.format(
@@ -347,9 +310,17 @@ class VBAProjectStream(object):
           header_struct.unknown11))
       print('')
 
-    stream_data_offset = self._HEADER.sizeof()
     for string_index in range(header_struct.number_of_strings):
-      string_struct = self._STRING.parse(stream_data[stream_data_offset:])
+      data_type_map = self._GetDataTypeMap('project_stream_string')
+
+      try:
+        string_struct = data_type_map.MapByteStream(
+            stream_data[stream_data_offset:])
+      except (
+          dtfabric_errors.ByteStreamTooSmallError,
+          dtfabric_errors.MappingError) as exception:
+        raise errors.ParseError(exception)
+
       value_string = string_struct.string.decode('utf-16-le')
 
       if self._debug:
@@ -397,6 +368,9 @@ class VBACollector(object):
       source (str): path of the OLE compound file.
       output_writer (OutputWriter): output writer.
     """
+    # TODO: remove this once output_writer is used.
+    _ = output_writer
+
     self.stream_found = False
 
     olecf_file = pyolecf.file()
