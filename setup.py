@@ -4,6 +4,7 @@
 
 import glob
 import os
+import pkg_resources
 import sys
 
 try:
@@ -113,6 +114,7 @@ else:
 
           lines.extend([
               '%{python3_sitelib}/olecfrc/*.py',
+              '%{python3_sitelib}/olecfrc/*.yaml',
               '%{python3_sitelib}/olecfrc*.egg-info/*',
               '',
               '%exclude %{_prefix}/share/doc/*',
@@ -157,22 +159,23 @@ def parse_requirements_from_file(path):
   Args:
     path (str): path to the requirements file.
 
-  Yields:
-    str: name and optional version information of the required package.
+  Returns:
+    list[str]: name and optional version information of the required packages.
   """
   with open(path, 'r') as file_object:
     file_contents = file_object.read()
 
+  requirements = []
   for requirement in pkg_resources.parse_requirements(file_contents):
     try:
       name = str(requirement.req)
     except AttributeError:
       name = str(requirement)
 
-    if name.startswith('pip '):
-      continue
+    if not name.startswith('pip '):
+      requirements.append(name)
 
-    yield name
+  return requirements
 
 
 olecfrc_description = (
