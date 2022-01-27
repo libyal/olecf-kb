@@ -162,18 +162,19 @@ def parse_requirements_from_file(path):
   Returns:
     list[str]: name and optional version information of the required packages.
   """
-  with open(path, 'r') as file_object:
-    file_contents = file_object.read()
-
   requirements = []
-  for requirement in pkg_resources.parse_requirements(file_contents):
-    try:
-      name = str(requirement.req)
-    except AttributeError:
-      name = str(requirement)
+  if os.path.isfile(path):
+    with open(path, 'r') as file_object:
+      file_contents = file_object.read()
 
-    if not name.startswith('pip '):
-      requirements.append(name)
+    for requirement in pkg_resources.parse_requirements(file_contents):
+      try:
+        name = str(requirement.req)
+      except AttributeError:
+        name = str(requirement)
+
+      if not name.startswith('pip '):
+        requirements.append(name)
 
   return requirements
 
@@ -215,7 +216,7 @@ setup(
     zip_safe=False,
     scripts=glob.glob(os.path.join('scripts', '[a-z]*.py')),
     data_files=[
-        ('share/doc/olecfrc', [
+        ('share/doc/olecf-kb', [
             'LICENSE', 'README']),
     ],
     install_requires=parse_requirements_from_file('requirements.txt'),
