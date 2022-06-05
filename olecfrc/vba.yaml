@@ -1,3 +1,5 @@
+# dtFabric format specification.
+---
 name: vba
 type: format
 description: Visual Basic for Applications (VBA) formats
