@@ -204,6 +204,7 @@ setup(
     version=olecfrc.__version__,
     description=olecfrc_description,
     long_description=olecfrc_long_description,
+    long_description_content_type='text/plain',
     license='Apache License, Version 2.0',
     url='https://github.com/libyal/olecf-kb',
     maintainer='Joachim Metz',
