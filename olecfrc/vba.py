@@ -56,32 +56,21 @@ class FStream(data_format.BinaryDataFormat):
       print(hexdump.Hexdump(stream_data[:stream_offset]))
 
     if self._debug:
-      print('Unknown1\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-          header_struct.unknown1))
-      print('Unknown2\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-          header_struct.unknown2))
-      print('Unknown3\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-          header_struct.unknown3))
-      print('Unknown4\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-          header_struct.unknown4))
-      print('Unknown5\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-          header_struct.unknown5))
-      print('Unknown6\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-          header_struct.unknown6))
-      print('Unknown7\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-          header_struct.unknown7))
-      print('Unknown8\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-          header_struct.unknown8))
-      print('Unknown9\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-          header_struct.unknown9))
-      print('Unknown10\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-          header_struct.unknown10))
-      print('Unknown11\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-          header_struct.unknown11))
+      print(f'Unknown1\t\t\t\t\t\t\t: 0x{header_struct.unknown1:08x}')
+      print(f'Unknown2\t\t\t\t\t\t\t: 0x{header_struct.unknown2:08x}')
+      print(f'Unknown3\t\t\t\t\t\t\t: 0x{header_struct.unknown3:08x}')
+      print(f'Unknown4\t\t\t\t\t\t\t: 0x{header_struct.unknown4:08x}')
+      print(f'Unknown5\t\t\t\t\t\t\t: 0x{header_struct.unknown5:08x}')
+      print(f'Unknown6\t\t\t\t\t\t\t: 0x{header_struct.unknown6:08x}')
+      print(f'Unknown7\t\t\t\t\t\t\t: 0x{header_struct.unknown7:08x}')
+      print(f'Unknown8\t\t\t\t\t\t\t: 0x{header_struct.unknown8:08x}')
+      print(f'Unknown9\t\t\t\t\t\t\t: 0x{header_struct.unknown9:08x}')
+      print(f'Unknown10\t\t\t\t\t\t\t: 0x{header_struct.unknown10:08x}')
+      print(f'Unknown11\t\t\t\t\t\t\t: 0x{header_struct.unknown11:08x}')
 
       # CLSID of StdFont: 0be35203-8f91-11ce-9de3-00aa004bb851
       uuid_value = uuid.UUID(bytes_le=header_struct.unknown12)
-      print('Unknown12\t\t\t\t\t\t\t: {0:s}'.format(uuid_value))
+      print(f'Unknown12\t\t\t\t\t\t\t: {uuid_value!s}')
 
       print('')
 
@@ -102,32 +91,25 @@ class FStream(data_format.BinaryDataFormat):
         print(hexdump.Hexdump(stream_data[stream_offset:next_stream_offset]))
 
       if self._debug:
-        print('Unknown7\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-            entry_struct.unknown7))
-        print('Unknown8\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-            entry_struct.unknown8))
-        print('Unknown9\t\t\t\t\t\t\t: 0x{0:04x}'.format(
-            entry_struct.unknown9))
+        print(f'Unknown7\t\t\t\t\t\t\t: 0x{entry_struct.unknown7:08x}')
+        print(f'Unknown8\t\t\t\t\t\t\t: 0x{entry_struct.unknown8:08x}')
+        print(f'Unknown9\t\t\t\t\t\t\t: 0x{entry_struct.unknown9:04x}')
 
-        print('Size\t\t\t\t\t\t\t\t: {0:d}'.format(entry_struct.size))
+        print(f'Size\t\t\t\t\t\t\t\t: {entry_struct.size:d}')
 
-        print('Unknown1\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-            entry_struct.unknown1))
-        print('Unknown2\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-            entry_struct.unknown2))
-        print('Unknown3\t\t\t\t\t\t\t: {0:d}'.format(
-            entry_struct.unknown3))
-        print('O stream entry size\t\t\t\t\t\t: {0:0d}'.format(
-            entry_struct.o_stream_entry_size))
-        print('O stream entry index\t\t\t\t\t\t: {0:d}'.format(
-            entry_struct.o_stream_entry_index))
-        print('Unknown6\t\t\t\t\t\t\t: 0x{0:04x}'.format(
-            entry_struct.unknown6))
+        print(f'Unknown1\t\t\t\t\t\t\t: 0x{entry_struct.unknown1:08x}')
+        print(f'Unknown2\t\t\t\t\t\t\t: 0x{entry_struct.unknown2:08x}')
+        print(f'Unknown3\t\t\t\t\t\t\t: {entry_struct.unknown3:d}')
+        print((f'O stream entry size\t\t\t\t\t\t: '
+               f'{entry_struct.o_stream_entry_size:0d}'))
+        print((f'O stream entry index\t\t\t\t\t\t: '
+               f'{entry_struct.o_stream_entry_index:d}'))
+        print(f'Unknown6\t\t\t\t\t\t\t: 0x{entry_struct.unknown6:04x}')
 
         # TODO: fix this.
         try:
           variable_name = entry_struct.variable_name.decode('cp1252')
-          print('Variable name\t\t\t\t\t\t\t: {0:s}'.format(variable_name))
+          print(f'Variable name\t\t\t\t\t\t\t: {variable_name:s}')
         except UnicodeEncodeError:
           pass
 
@@ -207,33 +189,22 @@ class OStream(data_format.BinaryDataFormat):
 
       # TODO: add debug info.
       if self._debug:
-        print('Unknown1\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-            entry_part1_struct.unknown1))
-        print('Unknown2\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-            entry_part1_struct.unknown2))
-        print('Unknown3\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-            entry_part1_struct.unknown3))
-        print('Unknown4\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-            entry_part1_struct.unknown4))
-        print('Data size\t\t\t\t\t\t\t: {0:d} (0x{1:08x})'.format(
-            entry_part1_struct.data_size & 0x7fffffff,
-            entry_part1_struct.data_size))
-        print('Unknown6\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-            entry_part1_struct.unknown6))
-        print('Data\t\t\t\t\t\t\t\t: {0:s}'.format(entry_part1_struct.data))
+        print(f'Unknown1\t\t\t\t\t\t\t: 0x{entry_part1_struct.unknown1:08x}')
+        print(f'Unknown2\t\t\t\t\t\t\t: 0x{entry_part1_struct.unknown2:08x}')
+        print(f'Unknown3\t\t\t\t\t\t\t: 0x{entry_part1_struct.unknown3:08x}')
+        print(f'Unknown4\t\t\t\t\t\t\t: 0x{entry_part1_struct.unknown4:08x}')
+        data_size = entry_part1_struct.data_size & 0x7fffffff
+        print((f'Data size\t\t\t\t\t\t\t: {data_size:d} '
+               f'(0x{entry_part1_struct.data_size:08x})'))
+        print(f'Unknown6\t\t\t\t\t\t\t: 0x{entry_part1_struct.unknown6:08x}')
+        print(f'Data\t\t\t\t\t\t\t\t: {entry_part1_struct.data:s}')
         # TODO: alignment padding.
-        print('Unknown7\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-            entry_part2_struct.unknown7))
-        print('Unknown8\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-            entry_part2_struct.unknown8))
-        print('Unknown9\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-            entry_part2_struct.unknown9))
-        print('Unknown10\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-            entry_part2_struct.unknown10))
-        print('Unknown11\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-            entry_part2_struct.unknown11))
-        print('Font name\t\t\t\t\t\t\t: {0:s}'.format(
-            entry_part2_struct.font_name))
+        print(f'Unknown7\t\t\t\t\t\t\t: 0x{entry_part2_struct.unknown7:08x}')
+        print(f'Unknown8\t\t\t\t\t\t\t: 0x{entry_part2_struct.unknown8:08x}')
+        print(f'Unknown9\t\t\t\t\t\t\t: 0x{entry_part2_struct.unknown9:08x}')
+        print(f'Unknown10\t\t\t\t\t\t\t: 0x{entry_part2_struct.unknown10:08x}')
+        print(f'Unknown11\t\t\t\t\t\t\t: 0x{entry_part2_struct.unknown11:08x}')
+        print(f'Font name\t\t\t\t\t\t\t: {entry_part2_struct.font_name:s}')
         # TODO: alignment padding.
         print('')
 
@@ -278,36 +249,25 @@ class VBAProjectStream(data_format.BinaryDataFormat):
 
     try:
       header_struct = data_type_map.MapByteStream(stream_data)
-    except (
-        dtfabric_errors.ByteStreamTooSmallError,
-        dtfabric_errors.MappingError) as exception:
+    except (dtfabric_errors.ByteStreamTooSmallError,
+            dtfabric_errors.MappingError) as exception:
       raise errors.ParseError(exception)
 
     stream_data_offset = data_type_map.GetByteSize()
 
     if self._debug:
-      print('Unknown1\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-          header_struct.unknown1))
-      print('Unknown2\t\t\t\t\t\t\t: 0x{0:04x}'.format(
-          header_struct.unknown2))
-      print('Unknown3\t\t\t\t\t\t\t: 0x{0:04x}'.format(
-          header_struct.unknown3))
-      print('Unknown4\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-          header_struct.unknown4))
-      print('Unknown5\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-          header_struct.unknown5))
-      print('Unknown6\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-          header_struct.unknown6))
-      print('Unknown7\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-          header_struct.unknown7))
-      print('Unknown8\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-          header_struct.unknown8))
-      print('Unknown9\t\t\t\t\t\t\t: {0:d}'.format(
-          header_struct.unknown9))
-      print('Number of strings\t\t\t\t\t\t: {0:d}'.format(
-          header_struct.number_of_strings))
-      print('Unknown11\t\t\t\t\t\t\t: {0:d}'.format(
-          header_struct.unknown11))
+      print(f'Unknown1\t\t\t\t\t\t\t: 0x{header_struct.unknown1:08x}')
+      print(f'Unknown2\t\t\t\t\t\t\t: 0x{header_struct.unknown2:04x}')
+      print(f'Unknown3\t\t\t\t\t\t\t: 0x{header_struct.unknown3:04x}')
+      print(f'Unknown4\t\t\t\t\t\t\t: 0x{header_struct.unknown4:08x}')
+      print(f'Unknown5\t\t\t\t\t\t\t: 0x{header_struct.unknown5:08x}')
+      print(f'Unknown6\t\t\t\t\t\t\t: 0x{header_struct.unknown6:08x}')
+      print(f'Unknown7\t\t\t\t\t\t\t: 0x{header_struct.unknown7:08x}')
+      print(f'Unknown8\t\t\t\t\t\t\t: 0x{header_struct.unknown8:08x}')
+      print(f'Unknown9\t\t\t\t\t\t\t: {header_struct.unknown9:d}')
+      print((f'Number of strings\t\t\t\t\t\t: '
+             f'{header_struct.number_of_strings:d}'))
+      print(f'Unknown11\t\t\t\t\t\t\t: {header_struct.unknown11:d}')
       print('')
 
     for string_index in range(header_struct.number_of_strings):
@@ -324,16 +284,12 @@ class VBAProjectStream(data_format.BinaryDataFormat):
       value_string = string_struct.string.decode('utf-16-le')
 
       if self._debug:
-        print('String: {0:d} size\t\t\t\t\t\t\t: {1:d}'.format(
-            string_index, string_struct.string_size))
-        print('String: {0:d}\t\t\t\t\t\t\t: {1:s}'.format(
-            string_index, value_string))
-        print('Unknown1\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-            string_struct.unknown1))
-        print('Unknown2\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-            string_struct.unknown2))
-        print('Unknown3\t\t\t\t\t\t\t: 0x{0:08x}'.format(
-            string_struct.unknown3))
+        print((f'String: {string_index:d} size\t\t\t\t\t\t\t: '
+               f'{string_struct.string_size:d}'))
+        print(f'String: {string_index:d}\t\t\t\t\t\t\t: {value_string:s}')
+        print(f'Unknown1\t\t\t\t\t\t\t: 0x{string_struct.unknown1:08x}')
+        print(f'Unknown2\t\t\t\t\t\t\t: 0x{string_struct.unknown2:08x}')
+        print(f'Unknown3\t\t\t\t\t\t\t: 0x{string_struct.unknown3:08x}')
 
       stream_data_offset += 14 + string_struct.string_size
 
@@ -407,14 +363,14 @@ class VBACollector(object):
           _, _, base_class = line.rpartition(b'=')
 
       if base_class:
-        olecf_path = '\\Macros\\{0:s}\\f'.format(base_class)
-        olecf_f_item = olecf_file.get_item_by_path(olecf_path)
+        olecf_f_item = olecf_file.get_item_by_path(
+            f'\\Macros\\{base_class:s}\\f')
         if olecf_f_item:
           f_stream = FStream(debug=self._debug)
           f_stream.Read(olecf_f_item)
 
-        olecf_path = '\\Macros\\{0:s}\\o'.format(base_class)
-        olecf_o_item = olecf_file.get_item_by_path(olecf_path)
+        olecf_o_item = olecf_file.get_item_by_path(
+            f'\\Macros\\{base_class:s}\\o')
         if olecf_o_item:
           o_stream = OStream(debug=self._debug)
           o_stream.Read(olecf_o_item)

@@ -51,8 +51,7 @@ class BinaryDataFormat(object):
       description (str): description.
       value (int): value.
     """
-    value_string = '{0:d}'.format(value)
-    self._DebugPrintValue(description, value_string)
+    self._DebugPrintValue(description, f'{value:d}')
 
   def _DebugPrintFiletimeValue(self, description, value):
     """Prints a FILETIME timestamp value for debugging.
@@ -69,9 +68,9 @@ class BinaryDataFormat(object):
       date_time = dfdatetime_filetime.Filetime(timestamp=value)
       date_time_string = date_time.CopyToDateTimeString()
       if date_time_string:
-        date_time_string = '{0:s} UTC'.format(date_time_string)
+        date_time_string = f'{date_time_string:s} UTC'
       else:
-        date_time_string = '0x{08:x}'.format(value)
+        date_time_string = f'0x{value:08x}'
 
     self._DebugPrintValue(description, date_time_string)
 
@@ -113,7 +112,7 @@ class BinaryDataFormat(object):
     Returns:
       str: integer formatted as a decimal.
     """
-    return '{0:d}'.format(integer)
+    return f'{integer:d}'
 
   def _FormatStructureObject(self, structure_object, debug_info):
     """Formats a structure object debug information.
@@ -140,7 +139,7 @@ class BinaryDataFormat(object):
         attribute_value = value_format_function(attribute_value)
 
       if isinstance(attribute_value, str) and '\n' in attribute_value:
-        text = '{0:s}:\n{1:s}'.format(description, attribute_value)
+        text = f'{description:s}:\n{attribute_value:s}'
       else:
         text = self._FormatValue(description, attribute_value)
 
@@ -162,8 +161,8 @@ class BinaryDataFormat(object):
       str: formatted value.
     """
     alignment, _ = divmod(len(description), 8)
-    alignment = 8 - alignment + 1
-    return '{0:s}{1:s}: {2!s}\n'.format(description, '\t' * alignment, value)
+    alignment_string = '\t' * (8 - alignment + 1)
+    return f'{description:s}{alignment_string:s}: {value!s}\n'
 
   def _GetDataTypeMap(self, name):
     """Retrieves a data type map defined by the definition file.
@@ -234,5 +233,5 @@ class BinaryDataFormat(object):
     except (dtfabric_errors.ByteStreamTooSmallError,
             dtfabric_errors.MappingError) as exception:
       raise errors.ParseError((
-          'Unable to map {0:s} data at offset: 0x{1:08x} with error: '
-          '{2!s}').format(description, file_offset, exception))
+          f'Unable to map {description:s} data at offset: 0x{file_offset:08x} '
+          f'with error: {exception!s}'))
