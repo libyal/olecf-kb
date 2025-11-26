@@ -1,3 +1,39 @@
 [build-system]
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "olecfrc"
+version = "20251126"
+description = "Object Linking and Embedding (OLE) Compound File resources (olecfrc)"
+maintainers = [
+    { name = "Joachim Metz", email = "joachim.metz@gmail.com" },
+]
+license = "Apache-2.0"
+license-files = ["ACKNOWLEDGEMENTS", "AUTHORS", "LICENSE"]
+readme = "README.md"
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Programming Language :: Python",
+]
+requires-python = ">=3.10"
+dependencies = [
+    "PyYAML >= 3.10",
+    "dfdatetime >= 20210509",
+    "dtfabric >= 20170524",
+    "libolecf-python >= 20151223",
+]
+
+[project.urls]
+Homepage = "https://github.com/libyal/olecf-kb"
+Repository = "https://github.com/libyal/olecf-kb"
+
+[tool.setuptools.package-data]
+olecfrc = [
+    "*.yaml",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["olecfrc"]
+exclude = ["docs", "tests", "tests.*", "utils"]

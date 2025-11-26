@@ -1,4 +1,0 @@
-PyYAML >= 3.10
-dfdatetime >= 20210509
-dtfabric >= 20170524
-libolecf-python >= 20151223
