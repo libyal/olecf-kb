@@ -34,10 +34,10 @@ class StdoutWriter(object):
 
 
 def Main():
-  """The main program function.
+  """Entry point of console script to extract VBA.
 
   Returns:
-    bool: True if successful or False if not.
+    int: exit code that is provided to sys.exit().
   """
   argument_parser = argparse.ArgumentParser(description=(
       'Extracts VBA from an OLE Compound File.'))
@@ -57,7 +57,7 @@ def Main():
     print('')
     argument_parser.print_help()
     print('')
-    return False
+    return 1
 
   logging.basicConfig(
       level=logging.INFO, format='[%(levelname)s] %(message)s')
@@ -67,7 +67,7 @@ def Main():
   if not output_writer.Open():
     print('Unable to open output writer.')
     print('')
-    return False
+    return 1
 
   collector_object = vba.VBACollector(debug=options.debug)
   collector_object.Collect(options.source, output_writer)
@@ -76,11 +76,8 @@ def Main():
   if not collector_object.stream_found:
     print('No VBA stream found.')
 
-  return True
+  return 0
 
 
 if __name__ == '__main__':
-  if not Main():
-    sys.exit(1)
-  else:
-    sys.exit(0)
+  sys.exit(Main())

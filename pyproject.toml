@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "olecfrc"
-version = "20251126"
+version = "20251128"
 description = "Object Linking and Embedding (OLE) Compound File resources (olecfrc)"
 maintainers = [
     { name = "Joachim Metz", email = "joachim.metz@gmail.com" },
@@ -23,6 +23,9 @@ dependencies = [
     "dtfabric >= 20170524",
     "libolecf-python >= 20151223",
 ]
+
+[project.scripts]
+vba = "olecfrc.scripts.vba:Main"
 
 [project.urls]
 Homepage = "https://github.com/libyal/olecf-kb"
