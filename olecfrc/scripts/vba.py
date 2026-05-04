@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """Script to extract Visual Basic for Applications (VBA)."""
 
 import argparse
@@ -9,7 +8,7 @@ import sys
 from olecfrc import vba
 
 
-class StdoutWriter(object):
+class StdoutWriter:
   """Class that defines a stdout output writer."""
 
   def Close(self):

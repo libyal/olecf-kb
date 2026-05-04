@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Visual Basic for Applications (VBA) collector."""
 
 import uuid
@@ -23,7 +22,7 @@ class FStream(data_format.BinaryDataFormat):
     Args:
       debug (Optional[bool]): True if debug information should be printed.
     """
-    super(FStream, self).__init__()
+    super().__init__()
     self._debug = debug
 
   def Read(self, olecf_item):
@@ -131,7 +130,7 @@ class OStream(data_format.BinaryDataFormat):
     Args:
       debug (Optional[bool]): True if debug information should be printed.
     """
-    super(OStream, self).__init__()
+    super().__init__()
     self._debug = debug
 
   def Read(self, olecf_item):
@@ -224,7 +223,7 @@ class VBAProjectStream(data_format.BinaryDataFormat):
     Args:
       debug (Optional[bool]): True if debug information should be printed.
     """
-    super(VBAProjectStream, self).__init__()
+    super().__init__()
     self._debug = debug
 
   def Read(self, olecf_item):
@@ -299,7 +298,7 @@ class VBAProjectStream(data_format.BinaryDataFormat):
     return True
 
 
-class VBACollector(object):
+class VBACollector:
   """Class that defines a Visual Basic for Applications (VBA) collector.
 
   Attributes:
@@ -312,7 +311,7 @@ class VBACollector(object):
     Args:
       debug (Optional[bool]): True if debug information should be printed.
     """
-    super(VBACollector, self).__init__()
+    super().__init__()
     self._debug = debug
 
     self.stream_found = False

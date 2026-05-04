@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "olecfrc"
-version = "20251128"
+version = "20260501"
 description = "Object Linking and Embedding (OLE) Compound File resources (olecfrc)"
 maintainers = [
     { name = "Joachim Metz", email = "joachim.metz@gmail.com" },
@@ -31,12 +31,10 @@ vba = "olecfrc.scripts.vba:Main"
 Homepage = "https://github.com/libyal/olecf-kb"
 Repository = "https://github.com/libyal/olecf-kb"
 
+[tool.setuptools]
+package-dir = {"olecfrc" = "olecfrc"}
+
 [tool.setuptools.package-data]
 olecfrc = [
     "*.yaml",
 ]
-
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["olecfrc"]
-exclude = ["docs", "tests", "tests.*", "utils"]
