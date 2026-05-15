@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "olecfrc"
-version = "20260506"
+version = "20260515"
 description = "Object Linking and Embedding (OLE) Compound File resources (olecfrc)"
 maintainers = [
     { name = "Joachim Metz", email = "joachim.metz@gmail.com" },
@@ -30,6 +30,16 @@ vba = "olecfrc.scripts.vba:Main"
 [project.urls]
 Homepage = "https://github.com/libyal/olecf-kb"
 Repository = "https://github.com/libyal/olecf-kb"
+
+[tool.black]
+line-length = 88
+target-version = ["py310"]
+include = "\\.pyi?$"
+
+[tool.docformatter]
+black = true
+non-cap = []
+non-strict = true
 
 [tool.setuptools]
 package-dir = {"olecfrc" = "olecfrc"}
