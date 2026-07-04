@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "olecfrc"
-version = "20260515"
+version = "20260704"
 description = "Object Linking and Embedding (OLE) Compound File resources (olecfrc)"
 maintainers = [
     { name = "Joachim Metz", email = "joachim.metz@gmail.com" },
@@ -40,6 +40,14 @@ include = "\\.pyi?$"
 black = true
 non-cap = []
 non-strict = true
+
+[tool.l2tdevtools]
+name = "Object Linking and Embedding (OLE) Compound File knowledge base (olecf-kb)"
+status = "experimental"
+description = """
+olecfrc is a Python module part of olecf-kb to allow reuse of Object Linking \
+and Embedding (OLE) Compound File resources. \
+"""
 
 [tool.setuptools]
 package-dir = {"olecfrc" = "olecfrc"}
