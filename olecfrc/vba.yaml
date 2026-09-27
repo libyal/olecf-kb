@@ -86,7 +86,7 @@ members:
 - name: unknown9
   data_type: uint16
 - name: size
-  desription: Does not include the 2 bytes of the size itself
+  description: Does not include the 2 bytes of the size itself
   data_type: uint16
 - name: unknown1
   data_type: uint32
